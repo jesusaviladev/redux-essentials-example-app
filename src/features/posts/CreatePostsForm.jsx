@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { postAdded } from './postsSlice';
 
-const PostsForm = () => {
+const CreatePostsForm = () => {
+    const users = useSelector((state) => state.users);
     const dispatch = useDispatch();
 
     const [formValues, setFormValues] = useState({
@@ -12,7 +14,7 @@ const PostsForm = () => {
         content: {
             value: '',
         },
-        userId: null,
+        userId: '',
     });
 
     const setPostTitle = (postTitle) =>
@@ -31,16 +33,28 @@ const PostsForm = () => {
             },
         });
 
+    const setUser = (userId) =>
+        setFormValues({
+            ...formValues,
+            userId,
+        });
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const newPost = {
             title: formValues.title.value,
             content: formValues.content.value,
+            userId: formValues.userId,
         };
 
         dispatch(postAdded(newPost));
     };
+
+    const isDisabled =
+        !formValues.title.value ||
+        !formValues.content.value ||
+        !formValues.userId;
 
     return (
         <section>
@@ -62,10 +76,25 @@ const PostsForm = () => {
                         onChange={(e) => setPostContent(e.target.value)}
                     />
                 </div>
-                <button>Add Post</button>
+                <div>
+                    <select
+                        defaultValue={formValues.userId}
+                        onChange={(e) => setUser(e.target.value)}
+                    >
+                        <option disabled value="">
+                            Selecciona un usuario
+                        </option>
+                        {users.map((user) => (
+                            <option key={user.id} value={user.id}>
+                                {user.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <button disabled={isDisabled}>Add Post</button>
             </form>
         </section>
     );
 };
 
-export default PostsForm;
+export default CreatePostsForm;
