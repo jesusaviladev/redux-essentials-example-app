@@ -54,7 +54,7 @@ const EditPostsForm = () => {
 
     return (
         <section>
-            <h2>Add new Post</h2>
+            <h2>Edit post</h2>
             <form onSubmit={handleSubmit}>
                 <div>
                     <input
