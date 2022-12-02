@@ -11,11 +11,12 @@ const postSlice = createSlice({
     reducers: {
         postAdded: {
             reducer: (state, action) => [...state, action.payload],
-            prepare: ({ title, content }) => ({
+            prepare: ({ title, content, userId }) => ({
                 payload: {
                     id: nanoid(),
                     title,
                     content,
+                    userId,
                 },
             }),
         },

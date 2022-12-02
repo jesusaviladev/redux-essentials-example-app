@@ -12,6 +12,7 @@ const PostsForm = () => {
         content: {
             value: '',
         },
+        userId: null,
     });
 
     const setPostTitle = (postTitle) =>

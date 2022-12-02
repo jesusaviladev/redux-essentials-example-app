@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 const PostsList = () => {
     const posts = useSelector((state) => state.posts);
 
-    console.log(posts);
-
     return (
         <section>
             <h2>Posts</h2>
