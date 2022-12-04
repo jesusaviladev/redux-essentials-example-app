@@ -1,4 +1,4 @@
-const { useSelector } = require('react-redux');
+import { useSelector } from 'react-redux';
 
 const PostAuthor = ({ userId }) => {
     const user = useSelector((state) =>

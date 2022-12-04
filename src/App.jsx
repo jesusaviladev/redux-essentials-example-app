@@ -6,7 +6,7 @@ import {
     Redirect,
 } from 'react-router-dom';
 
-import { Navbar } from './app/Navbar';
+import Navbar from './app/Navbar.jsx';
 import EditPostsForm from './features/posts/EditPostForm';
 import CreatePostsForm from './features/posts/CreatePostsForm';
 import PostsList from './features/posts/PostsList';
