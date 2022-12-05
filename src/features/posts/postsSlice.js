@@ -1,31 +1,20 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit';
-import { sub } from 'date-fns';
 
-const initialState = [
-    {
-        id: '1',
-        date: sub(new Date(), { minutes: 10 }).toISOString(),
-        title: 'First Post!',
-        content: 'Hello!',
-        userId: '1',
-        reactions: { thumbsUp: 0, hooray: 0, heart: 0, rocket: 0, eyes: 0 },
-    },
-    {
-        id: '2',
-        date: sub(new Date(), { minutes: 5 }).toISOString(),
-        title: 'Second Post',
-        content: 'More text',
-        userId: '0',
-        reactions: { thumbsUp: 0, hooray: 0, heart: 0, rocket: 0, eyes: 0 },
-    },
-];
+const initialState = {
+    data: [],
+    loading: false,
+    error: false,
+};
 
 const postSlice = createSlice({
     name: 'posts',
     initialState,
     reducers: {
         postAdded: {
-            reducer: (state, action) => [...state, action.payload],
+            reducer: (state, action) => ({
+                ...state,
+                data: [...state.data, action.payload],
+            }),
             prepare: ({ title, content, userId }) => ({
                 payload: {
                     id: nanoid(),
@@ -46,16 +35,16 @@ const postSlice = createSlice({
         postUpdated: (state, action) => {
             const { postId } = action.payload;
 
-            const editedPostIndex = state.findIndex(
+            const editedPostIndex = state.data.findIndex(
                 (post) => post.id === postId
             );
 
             if (editedPostIndex === -1) return state;
 
-            const newState = [...state];
+            const newState = { ...state, data: [...state.data] };
 
-            newState[editedPostIndex] = {
-                ...state[editedPostIndex],
+            newState.data[editedPostIndex] = {
+                ...state.data[editedPostIndex],
                 id: action.payload.postId,
                 title: action.payload.title,
                 content: action.payload.content,
@@ -65,17 +54,22 @@ const postSlice = createSlice({
         reactionAdded: (state, action) => {
             const { postId, reaction } = action.payload;
 
-            const postIndex = state.findIndex((post) => post.id === postId);
+            const postIndex = state.data.findIndex(
+                (post) => post.id === postId
+            );
 
             if (postIndex === -1) return state;
 
-            const newState = [...state];
+            const newState = {
+                ...state,
+                data: [...state.data],
+            };
 
-            newState[postIndex] = {
-                ...state[postIndex],
+            newState.data[postIndex] = {
+                ...state.data[postIndex],
                 reactions: {
-                    ...state[postIndex].reactions,
-                    [reaction]: state[postIndex].reactions[reaction] + 1,
+                    ...state.data[postIndex].reactions,
+                    [reaction]: state.data[postIndex].reactions[reaction] + 1,
                 },
             };
 
@@ -85,5 +79,12 @@ const postSlice = createSlice({
 });
 
 export const { postAdded, postUpdated, reactionAdded } = postSlice.actions;
+
+// Selectors
+
+export const selectAllPosts = (state) => state.posts.data;
+
+export const selectPostById = (state, postId) =>
+    state.posts.data.find((post) => post.id === postId);
 
 export default postSlice.reducer;
