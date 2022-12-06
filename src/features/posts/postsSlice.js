@@ -1,10 +1,13 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit';
+import { client } from '../../api/client';
 
 const initialState = {
     data: [],
-    loading: false,
-    error: false,
+    status: 'idle',
+    error: null,
 };
+
+// Reducer
 
 const postSlice = createSlice({
     name: 'posts',
@@ -76,9 +79,36 @@ const postSlice = createSlice({
             return newState;
         },
     },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchPosts.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchPosts.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.data = state.data.concat(action.payload);
+            })
+            .addCase(fetchPosts.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            });
+    },
 });
 
+// Action creators
+
 export const { postAdded, postUpdated, reactionAdded } = postSlice.actions;
+
+// Thunks (async logic)
+
+export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
+    try {
+        const response = await client.get('/fakeApi/posts');
+        return response.data;
+    } catch (error) {
+        throw new Error(error);
+    }
+});
 
 // Selectors
 

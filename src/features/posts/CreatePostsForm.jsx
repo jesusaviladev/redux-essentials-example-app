@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { postAdded } from './postsSlice';
 
 const CreatePostsForm = () => {
-    const users = useSelector((state) => state.users);
+    const users = useSelector((state) => state.users.data);
     const dispatch = useDispatch();
 
     const [formValues, setFormValues] = useState({

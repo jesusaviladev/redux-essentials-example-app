@@ -18,7 +18,7 @@ const SinglePostPage = () => {
                 <p className="post-content">{post.content}</p>
                 <TimeAgo timestamp={post.date} />
                 <div>
-                    <PostAuthor userId={post.userId} />
+                    <PostAuthor userId={post.user} />
                 </div>
                 <Link to={`/editPost/${post.id}`} className="button">
                     Edit Post
