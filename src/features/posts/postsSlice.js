@@ -13,28 +13,6 @@ const postSlice = createSlice({
     name: 'posts',
     initialState,
     reducers: {
-        postAdded: {
-            reducer: (state, action) => ({
-                ...state,
-                data: [...state.data, action.payload],
-            }),
-            prepare: ({ title, content, userId }) => ({
-                payload: {
-                    id: nanoid(),
-                    date: new Date().toISOString(),
-                    title,
-                    content,
-                    userId,
-                    reactions: {
-                        thumbsUp: 0,
-                        hooray: 0,
-                        heart: 0,
-                        rocket: 0,
-                        eyes: 0,
-                    },
-                },
-            }),
-        },
         postUpdated: (state, action) => {
             const { postId } = action.payload;
 
@@ -91,13 +69,16 @@ const postSlice = createSlice({
             .addCase(fetchPosts.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
+            })
+            .addCase(addNewPost.fulfilled, (state, action) => {
+                state.data.push(action.payload);
             });
     },
 });
 
 // Action creators
 
-export const { postAdded, postUpdated, reactionAdded } = postSlice.actions;
+export const { postUpdated, reactionAdded } = postSlice.actions;
 
 // Thunks (async logic)
 
@@ -109,6 +90,14 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
         throw new Error(error);
     }
 });
+
+export const addNewPost = createAsyncThunk(
+    'posts/addedNewPost',
+    async (newPost) => {
+        const response = await client.post('/fakeApi/posts', newPost);
+        return response.data;
+    }
+);
 
 // Selectors
 

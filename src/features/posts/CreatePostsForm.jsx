@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { postAdded } from './postsSlice';
+import { addNewPost } from './postsSlice';
 
 const CreatePostsForm = () => {
     const users = useSelector((state) => state.users.data);
     const dispatch = useDispatch();
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const [formValues, setFormValues] = useState({
         title: {
@@ -39,22 +41,44 @@ const CreatePostsForm = () => {
             userId,
         });
 
-    const handleSubmit = (e) => {
+    const resetForm = () =>
+        setFormValues({
+            title: {
+                value: '',
+            },
+            content: {
+                value: '',
+            },
+            userId: '',
+        });
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const newPost = {
-            title: formValues.title.value,
-            content: formValues.content.value,
-            userId: formValues.userId,
-        };
+        try {
+            const newPost = {
+                title: formValues.title.value,
+                content: formValues.content.value,
+                user: formValues.userId,
+            };
 
-        dispatch(postAdded(newPost));
+            setIsLoading(true);
+
+            await dispatch(addNewPost(newPost)).unwrap();
+
+            setIsLoading(false);
+            resetForm();
+        } catch (error) {
+            setIsLoading(false);
+            console.log(error);
+        }
     };
 
     const isDisabled =
         !formValues.title.value ||
         !formValues.content.value ||
-        !formValues.userId;
+        !formValues.userId ||
+        isLoading;
 
     return (
         <section>
