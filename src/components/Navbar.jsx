@@ -1,7 +1,11 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { fetchNotifications } from '../features/notifications/notificationsSlice';
 
 const Navbar = () => {
+    const dispatch = useDispatch();
+
     return (
         <nav>
             <section>
@@ -9,11 +13,16 @@ const Navbar = () => {
 
                 <div className="navContent">
                     <div className="navLinks">
-                        <div className="navLinks">
-                            <Link to="/">Posts</Link>
-                            <Link to="/users">Users</Link>
-                        </div>
+                        <Link to="/">Posts</Link>
+                        <Link to="/users">Users</Link>
+                        <Link to="/notifications">Notifications</Link>
                     </div>
+                    <button
+                        className="button"
+                        onClick={() => dispatch(fetchNotifications())}
+                    >
+                        Refresh Notifications
+                    </button>
                 </div>
             </section>
         </nav>

@@ -13,6 +13,7 @@ import PostsList from './features/posts/PostsList';
 import SinglePostPage from './features/posts/SinglePostPage';
 import UsersList from './features/users/UsersList.jsx';
 import UserPage from './features/users/UserPage.jsx';
+import NotificationsList from './features/notifications/NotificationsList.jsx';
 
 function App() {
     return (
@@ -42,6 +43,11 @@ function App() {
                     />
                     <Route exact path="/users" component={UsersList} />
                     <Route exact path="/users/:userId" component={UserPage} />
+                    <Route
+                        exact
+                        path="/notifications"
+                        component={NotificationsList}
+                    />
 
                     <Redirect to="/" />
                 </Switch>
