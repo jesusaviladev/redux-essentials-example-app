@@ -13,10 +13,10 @@ const EditPostsForm = () => {
 
     const [formValues, setFormValues] = useState({
         title: {
-            value: post.title,
+            value: post?.title,
         },
         content: {
-            value: post.content,
+            value: post?.content,
         },
     });
 
@@ -49,6 +49,8 @@ const EditPostsForm = () => {
 
         history.push(`/posts/${postId}`);
     };
+
+    if (!post) return <h2>Not found post</h2>;
 
     return (
         <section>

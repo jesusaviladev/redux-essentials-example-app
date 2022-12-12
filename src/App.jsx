@@ -6,11 +6,13 @@ import {
     Redirect,
 } from 'react-router-dom';
 
-import Navbar from './app/Navbar.jsx';
+import Navbar from './components/Navbar.jsx';
 import EditPostsForm from './features/posts/EditPostForm';
 import CreatePostsForm from './features/posts/CreatePostsForm';
 import PostsList from './features/posts/PostsList';
 import SinglePostPage from './features/posts/SinglePostPage';
+import UsersList from './features/users/UsersList.jsx';
+import UserPage from './features/users/UserPage.jsx';
 
 function App() {
     return (
@@ -38,6 +40,9 @@ function App() {
                         path="/editPost/:postId"
                         component={EditPostsForm}
                     />
+                    <Route exact path="/users" component={UsersList} />
+                    <Route exact path="/users/:userId" component={UserPage} />
+
                     <Redirect to="/" />
                 </Switch>
             </div>
