@@ -1,11 +1,21 @@
 import { formatDistanceToNow, parseISO } from 'date-fns';
-import { useSelector } from 'react-redux';
+import { useLayoutEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectAllUsers } from '../users/usersSlice';
-import { selectAllNotifications } from './notificationsSlice';
+import {
+    allNotificationsRead,
+    selectAllNotifications,
+} from './notificationsSlice';
 
 const NotificationsList = () => {
     const notifications = useSelector(selectAllNotifications);
     const users = useSelector(selectAllUsers);
+
+    const dispatch = useDispatch();
+
+    useLayoutEffect(() => {
+        dispatch(allNotificationsRead());
+    });
 
     return (
         <section className="notificationsList">
@@ -17,8 +27,14 @@ const NotificationsList = () => {
                 const date = parseISO(notification.date);
                 const timeAgo = formatDistanceToNow(date);
 
+                const notificationClassname = notification.isNew
+                    ? 'notification new'
+                    : 'notification';
                 return (
-                    <div key={notification.id} className="notification">
+                    <div
+                        key={notification.id}
+                        className={notificationClassname}
+                    >
                         <div>
                             <b>{user?.name || 'Unknown user'}: </b>
                             {notification.message}
@@ -26,6 +42,7 @@ const NotificationsList = () => {
                         <div title={notification.date}>
                             <i>{timeAgo} ago</i>
                         </div>
+                        {notification.date}
                     </div>
                 );
             })}

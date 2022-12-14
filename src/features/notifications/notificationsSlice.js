@@ -6,11 +6,29 @@ import { client } from '../../api/client';
 const notificationsSlice = createSlice({
     name: 'notifications',
     initialState: [],
-    reducer: {},
+    reducers: {
+        allNotificationsRead: (state) => {
+            state.forEach((notification) => {
+                notification.read = true;
+            });
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-            state.push(...action.payload);
-            // Sort with newest first
+            const notificationsWithMetadata = action.payload.map(
+                (notification) => ({
+                    ...notification,
+                    read: false,
+                    isNew: true,
+                })
+            );
+
+            state.forEach((notification) => {
+                notification.isNew = !notification.read;
+            });
+
+            state.push(...notificationsWithMetadata);
+
             state.sort((a, b) => b.date.localeCompare(a.date));
         });
     },
@@ -35,6 +53,8 @@ export const fetchNotifications = createAsyncThunk(
         return response.data;
     }
 );
+
+export const { allNotificationsRead } = notificationsSlice.actions;
 
 // selectors
 
