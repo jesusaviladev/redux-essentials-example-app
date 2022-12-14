@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import PostAuthor from './PostAuthor';
 import ReactionButtons from './ReactionButtons';
@@ -18,4 +19,4 @@ const Post = ({ id, title, content, date, reactions, user }) => (
     </article>
 );
 
-export default Post;
+export default memo(Post);

@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import { selectAllPosts } from '../posts/postsSlice';
+import { selectAllPosts, selectPostsByUser } from '../posts/postsSlice';
 import { selectUserById } from './usersSlice';
 
 const UserPage = () => {
@@ -8,9 +8,9 @@ const UserPage = () => {
 
     const user = useSelector((state) => selectUserById(state, userId));
 
-    const userPosts = useSelector(selectAllPosts).filter(
-        (post) => post.user === userId
-    );
+    const userPosts = useSelector((state) => selectPostsByUser(state, userId));
+
+    console.log(userPosts);
 
     if (!user || !userId) {
         return <p>El usuario no pudo ser encontrado</p>;
