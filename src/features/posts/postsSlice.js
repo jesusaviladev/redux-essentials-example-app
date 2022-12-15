@@ -1,15 +1,19 @@
 import {
     createAsyncThunk,
+    createEntityAdapter,
     createSelector,
     createSlice,
 } from '@reduxjs/toolkit';
 import { client } from '../../api/client';
 
-const initialState = {
-    data: [],
+const postAdapter = createEntityAdapter({
+    sortComparer: (a, b) => b.date.localeCompare(a.date),
+});
+
+const initialState = postAdapter.getInitialState({
     status: 'idle',
     error: null,
-};
+});
 
 // Reducer
 
@@ -20,45 +24,21 @@ const postSlice = createSlice({
         postUpdated: (state, action) => {
             const { postId } = action.payload;
 
-            const editedPostIndex = state.data.findIndex(
-                (post) => post.id === postId
-            );
+            const editedPost = state.entities[postId];
 
-            if (editedPostIndex === -1) return state;
+            if (!editedPost) return state;
 
-            const newState = { ...state, data: [...state.data] };
-
-            newState.data[editedPostIndex] = {
-                ...state.data[editedPostIndex],
-                id: action.payload.postId,
-                title: action.payload.title,
-                content: action.payload.content,
-            };
-            return newState;
+            editedPost.title = action.payload.title;
+            editedPost.content = action.payload.content;
         },
         reactionAdded: (state, action) => {
             const { postId, reaction } = action.payload;
 
-            const postIndex = state.data.findIndex(
-                (post) => post.id === postId
-            );
+            const existingPost = state.entities[postId];
 
-            if (postIndex === -1) return state;
+            if (!existingPost) return state;
 
-            const newState = {
-                ...state,
-                data: [...state.data],
-            };
-
-            newState.data[postIndex] = {
-                ...state.data[postIndex],
-                reactions: {
-                    ...state.data[postIndex].reactions,
-                    [reaction]: state.data[postIndex].reactions[reaction] + 1,
-                },
-            };
-
-            return newState;
+            existingPost.reactions[reaction]++;
         },
     },
     extraReducers: (builder) => {
@@ -68,14 +48,14 @@ const postSlice = createSlice({
             })
             .addCase(fetchPosts.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.data = state.data.concat(action.payload);
+                postAdapter.upsertMany(state, action.payload);
             })
             .addCase(fetchPosts.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
             })
             .addCase(addNewPost.fulfilled, (state, action) => {
-                state.data.push(action.payload);
+                postAdapter.addOne(state, action.payload);
             });
     },
 });
@@ -105,10 +85,11 @@ export const addNewPost = createAsyncThunk(
 
 // Selectors
 
-export const selectAllPosts = (state) => state.posts.data;
-
-export const selectPostById = (state, postId) =>
-    state.posts.data.find((post) => post.id === postId);
+export const {
+    selectAll: selectAllPosts,
+    selectById: selectPostById,
+    selectIds: selectPostIds,
+} = postAdapter.getSelectors((state) => state.posts);
 
 export const selectPostsByUser = createSelector(
     [selectAllPosts, (state, userId) => userId],
